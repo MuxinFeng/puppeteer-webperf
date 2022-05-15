@@ -6,8 +6,8 @@ const HAR = require('puppeteer-har');
   const page = await browser.newPage();
 
   const har = new HAR(page);
-  await har.start({path: 'results.har'});
-  await page.goto('https://pptr.dev');
+  await har.start({ path: 'results.har' });
+  await page.goto('https://www.baidu.com/');
   await har.stop();
   await browser.close();
 })();

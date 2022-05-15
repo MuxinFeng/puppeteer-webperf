@@ -18,7 +18,7 @@ function calculateShifts() {
     }
   });
 
-  observer.observe({type: 'layout-shift', buffered: true});
+  observer.observe({ type: 'layout-shift', buffered: true });
 
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') {
@@ -28,7 +28,6 @@ function calculateShifts() {
     }
   });
 }
-
 
 /**
  * Get cumulative layout shift for a URL
@@ -53,7 +52,7 @@ async function getCLS(url) {
     // inject a function with the code from
     // https://web.dev/cls/#measure-cls-in-javascript
     await page.evaluateOnNewDocument(calculateShifts);
-    await page.goto(url, {waitUntil: 'load', timeout: 60000});
+    await page.goto(url, { waitUntil: 'load', timeout: 60000 });
 
     const cls = await page.evaluate(() => {
       return window.cumulativeLayoutShiftScore;
@@ -66,4 +65,4 @@ async function getCLS(url) {
   }
 }
 
-getCLS('https://pptr.dev').then((cls) => console.log('CLS is: ' + cls));
+getCLS('https://www.baidu.com/').then((cls) => console.log('CLS is: ' + cls));

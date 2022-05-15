@@ -4,20 +4,20 @@ const puppeteer = require('puppeteer');
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   const navigationPromise = page.waitForNavigation();
-  await page.goto('https://pptr.dev');
+  await page.goto('https://www.baidu.com/');
 
   await navigationPromise;
 
   const firstPaint = JSON.parse(
-      await page.evaluate(() =>
-        JSON.stringify(performance.getEntriesByName('first-paint')),
-      ),
+    await page.evaluate(() =>
+      JSON.stringify(performance.getEntriesByName('first-paint'))
+    )
   );
 
   const firstContentfulPaint = JSON.parse(
-      await page.evaluate(() =>
-        JSON.stringify(performance.getEntriesByName('first-contentful-paint')),
-      ),
+    await page.evaluate(() =>
+      JSON.stringify(performance.getEntriesByName('first-contentful-paint'))
+    )
   );
 
   console.log(`First paint: ${firstPaint[0].startTime}`);

@@ -13,8 +13,8 @@ const puppeteer = require('puppeteer');
     }
   });
 
-  await page.goto('https://reddit.com');
-  await page.screenshot({path: 'pptr-nojs.png'});
+  await page.goto('https://www.baidu.com/');
+  await page.screenshot({ path: 'pptr-nojs.png' });
 
   await browser.close();
 })();

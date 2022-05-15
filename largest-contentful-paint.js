@@ -15,7 +15,7 @@ function calculateLCP() {
     window.largestContentfulPaint = lastEntry.renderTime || lastEntry.loadTime;
   });
 
-  observer.observe({type: 'largest-contentful-paint', buffered: true});
+  observer.observe({ type: 'largest-contentful-paint', buffered: true });
 
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') {
@@ -48,7 +48,7 @@ async function getLCP(url) {
     await page.emulate(phone);
 
     await page.evaluateOnNewDocument(calculateLCP);
-    await page.goto(url, {waitUntil: 'load', timeout: 60000});
+    await page.goto(url, { waitUntil: 'load', timeout: 60000 });
 
     const lcp = await page.evaluate(() => {
       return window.largestContentfulPaint;
@@ -61,4 +61,4 @@ async function getLCP(url) {
   }
 }
 
-getLCP('https://pptr.dev').then((lcp) => console.log('LCP is: ' + lcp));
+getLCP('https://www.baidu.com/').then((lcp) => console.log('LCP is: ' + lcp));

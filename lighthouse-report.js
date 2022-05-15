@@ -16,32 +16,41 @@ const options = {
 /**
  *
  * Perform a Lighthouse run
- * @param {String} url - url The URL to test
+ * @param {any} urls - url The URL to test
  * @param {Object} options - Optional settings for the Lighthouse run
  * @param {Object} [config=null] - Configuration for the Lighthouse run. If
  * not present, the default config is used.
  */
-async function lighthouseFromPuppeteer(url, options, config = null) {
+async function lighthouseFromPuppeteer(urls, options, config = null) {
   // Launch chrome using chrome-launcher
   const chrome = await chromeLauncher.launch(options);
   options.port = chrome.port;
 
   // Connect chrome-launcher to puppeteer
-  const resp = await util.promisify(request)(`http://localhost:${options.port}/json/version`);
-  const {webSocketDebuggerUrl} = JSON.parse(resp.body);
+  const resp = await util.promisify(request)(
+    `http://localhost:${options.port}/json/version`
+  );
+  const { webSocketDebuggerUrl } = JSON.parse(resp.body);
   const browser = await puppeteer.connect({
     browserWSEndpoint: webSocketDebuggerUrl,
   });
 
   // Run Lighthouse
-  const {lhr} = await lighthouse(url, options, config);
+  const { lhr } = await lighthouse(urls[0], options, config);
   await browser.disconnect();
   await chrome.kill();
 
-  const html = reportGenerator.generateReport(lhr, 'html');
-  fs.writeFile('report.html', html, function(err) {
+  // const html = reportGenerator.generateReport(lhr, 'html');
+  const json = reportGenerator.generateReport(lhr, 'json');
+  // fs.writeFile('report.html', html, function(err) {
+  //   if (err) throw err;
+  // });
+  fs.writeFile('report1.json', json, function (err) {
     if (err) throw err;
   });
 }
 
-lighthouseFromPuppeteer('https://pptr.dev', options);
+lighthouseFromPuppeteer(
+  ['http://qilin.zaihuiba.com/tiktok/public-resource'],
+  options
+);

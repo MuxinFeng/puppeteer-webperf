@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>性能监控</title>
+
+    <button onclick="handleChangeUrl">切换页面</button>
+  </head>
+
+  <body>
+    <script>
+      const handleChangeUrl = () => {
+        window.location.replace('baidu.com');
+      };
+      //   window.open('https://www.baidu.com/');
+      window.onload = function () {
+        // 通过Performance timing API获取
+        // const performanceTiming = window.performance.timing;
+        // const {
+        //   connectEnd,
+        //   connectStart,
+        //   domComplete,
+        //   domContentLoadedEventEnd,
+        //   domContentLoadedEventStart,
+        //   domInteractive,
+        //   domLoading,
+        //   domainLookupEnd,
+        //   domainLookupStart,
+        //   fetchStart,
+        //   loadEventEnd,
+        //   loadEventStart,
+        //   navigationStart,
+        //   redirectEnd,
+        //   redirectStart,
+        //   requestStart,
+        //   responseEnd,
+        //   responseStart,
+        //   secureConnectionStart,
+        //   unloadEventEnd,
+        //   unloadEventStart,
+        // } = performanceTiming;
+        // console.log(performanceTiming);
+        // console.log(
+        //   `🎨 Prompt for unload: ${navigationStart}`,
+        //   `\n🎐 redirect: ${redirectEnd - redirectStart}`,
+        //   `\n🎄 unload: ${unloadEventEnd - unloadEventStart}`,
+        //   `\n⌛️ App cache: ${domainLookupStart - fetchStart}`,
+        //   `\n🧩 DNS: ${domainLookupEnd - domainLookupStart}`,
+        //   `\n⚽ TCP: ${connectEnd - connectStart}`,
+        //   `\n👖 Request: ${responseStart - requestStart}`,
+        //   `\n🩱 Response: ${responseEnd - responseStart}`,
+        //   `\n👚 Processing: ${domComplete - domLoading}`,
+        //   `\n🛍️ onload: ${loadEventEnd - loadEventStart}`
+        // );
+
+        // 通过Performance getEntries API获取
+        const entries = window.performance.getEntries();
+        console.log(entries[0]);
+        const {
+          connectEnd,
+          connectStart,
+          domComplete,
+          domContentLoadedEventEnd,
+          domContentLoadedEventStart,
+          domInteractive,
+          domLoading,
+          domainLookupEnd,
+          domainLookupStart,
+          fetchStart,
+          loadEventEnd,
+          loadEventStart,
+          navigationStart,
+          redirectEnd,
+          redirectStart,
+          requestStart,
+          responseEnd,
+          responseStart,
+          secureConnectionStart,
+          unloadEventEnd,
+          unloadEventStart,
+        } = entries[0];
+        console.log(
+          `🎨 Prompt for unload: ${navigationStart}`,
+          `\n🎐 redirect: ${redirectEnd - redirectStart}`,
+          `\n🎄 unload: ${unloadEventEnd - unloadEventStart}`,
+          `\n⌛️ App cache: ${domainLookupStart - fetchStart}`,
+          `\n🧩 DNS: ${domainLookupEnd - domainLookupStart}`,
+          `\n⚽ TCP: ${connectEnd - connectStart}`,
+          `\n👖 Request: ${responseStart - requestStart}`,
+          `\n🩱 Response: ${responseEnd - responseStart}`,
+          `\n👚 Processing: ${domComplete - domLoading}`,
+          `\n🛍️ onload: ${loadEventEnd - loadEventStart}`
+        );
+        // 通过PerformanceObserver获取
+        const config = {
+          entryTypes: ['paint'],
+          //   entryTypes: ['navigation', 'resource', 'mark', 'measure', 'paint'],
+        };
+
+        const observer = new PerformanceObserver((list) => {
+          list.getEntries().forEach((entry) => {
+            // 在控制台上显示每个报告的测量
+            console.log(
+              entry,
+              `Name: ${entry.name}`,
+              `Type: ${entry.entryType}`,
+              `Start: ${entry.startTime}`,
+              `Duration: ${entry.duration}`
+            );
+          });
+        });
+
+        // 开始观察
+        observer.observe(config);
+        // performance.mark('registered-observer');
+
+        //通过lighthouse获取
+      };
+    </script>
+  </body>
+</html>
