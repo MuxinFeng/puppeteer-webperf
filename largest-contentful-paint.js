@@ -1,7 +1,5 @@
 const puppeteer = require('puppeteer');
-const devices = require('puppeteer/DeviceDescriptors');
-
-const phone = devices.devicesMap['Nexus 5X'];
+const phone = puppeteer.devices['Moto G4']; // 最新版的lighthouse是用该机型测试，我认为该机型具有代表性
 
 /**
  * Measure LCP
@@ -33,6 +31,7 @@ function calculateLCP() {
  */
 async function getLCP(url) {
   const browser = await puppeteer.launch({
+    headless: false,
     args: ['--no-sandbox'],
     timeout: 10000,
   });
@@ -61,4 +60,6 @@ async function getLCP(url) {
   }
 }
 
-getLCP('https://www.baidu.com/').then((lcp) => console.log('LCP is: ' + lcp));
+getLCP('http://localhost:1024/kylin_h5/sass/home').then((lcp) =>
+  console.log('LCP is: ' + lcp)
+);

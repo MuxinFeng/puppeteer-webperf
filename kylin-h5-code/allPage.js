@@ -1,94 +1,4 @@
-const fs = require('fs');
-const puppeteer = require('puppeteer');
-const deviceEnv = puppeteer.devices['Moto G4']; // 最新版的lighthouse是用该机型测试，我认为该机型具有代表性
-const netEnv = puppeteer.networkConditions['Fast 3G']; //目前只有快慢3g的选项，其实跟实际环境还有一定差别
-
-// 要配置一个稳定、尽可能贴近实际使用情况的浏览器环境
-const options = {
-  headless: false, // 是否以 无头模式 运行浏览器。默认是 true，除非 devtools 选项是 true。
-  // locale: 'zh-CH',
-  // logLevel: 'info',
-  // disableDeviceEmulation: true,
-};
-
-const getPerformance = async (name, url, token) => {
-  // 实例化puppeteer
-  const browser = await puppeteer.launch(options);
-  const page = await browser.newPage();
-  await page.emulate(deviceEnv);
-  // await page.emulateNetworkConditions(netEnv);
-  page.setCookie({
-    name: 'kyer',
-    value: token,
-    url,
-  });
-
-  //开始采集数据
-  let oldJson;
-  try {
-    oldJson = fs.readFileSync(
-      `./kylin-h5/mainPage_performance_data_old2.json`,
-      'utf8'
-    );
-  } catch (error) {
-    console.log(error);
-  }
-  oldJson = oldJson ? JSON.parse(oldJson) : oldJson;
-
-  // await page.evaluateOnNewDocument(calculateLCP);
-  await page.goto(url);
-
-  const navigation = JSON.parse(
-    await page.evaluate(() =>
-      JSON.stringify(window.performance.getEntriesByType('navigation')[0])
-    )
-  );
-  const paint = JSON.parse(
-    await page.evaluate(() =>
-      JSON.stringify(window.performance.getEntriesByType('paint')[0])
-    )
-  );
-  // const lcp = await page.evaluate(() => {
-  //   return window.largestContentfulPaint;
-  // });
-  console.log(`${name}页面性能参数:`);
-  console.log('🏆 navigation:', navigation);
-  console.log('🎨 paint:', paint);
-  const newJson = oldJson
-    ? [...oldJson, { name, navigation, paint }]
-    : [{ name, url, navigation, paint }];
-  fs.writeFile(
-    `./kylin-h5/mainPage_performance_data_old2.json`,
-    JSON.stringify(newJson),
-    (err) => {
-      if (err) throw err;
-    }
-  );
-
-  await browser.close();
-};
-
-//目前LCP有时候一直是0，问题还没排查出来
-function calculateLCP() {
-  window.largestContentfulPaint = 0;
-  const observer = new PerformanceObserver((entryList) => {
-    const entries = entryList.getEntries();
-    const lastEntry = entries[entries.length - 1];
-    window.largestContentfulPaint = lastEntry.renderTime || lastEntry.loadTime;
-  });
-
-  observer.observe({ type: 'largest-contentful-paint', buffered: true });
-
-  document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'hidden') {
-      observer.takeRecords();
-      observer.disconnect();
-      console.log('LCP:', window.largestContentfulPaint);
-    }
-  });
-}
-
-const allPage = [
+export const allPage = [
   // 主页-业务入口
   {
     name: 'SaaSHome',
@@ -120,6 +30,11 @@ const allPage = [
   {
     name: 'SaaSOceanVisitNewCreate',
     path: 'http://localhost:1024/kylin_h5/saas/ocean_visit_new/create',
+  },
+  // 拜访统计
+  {
+    name: 'SaaSOceanVisitStatistics',
+    path: 'http://localhost:1024/kylin_h5/saas/ocean_visit/statistics',
   },
   // 新建签到
   {
@@ -238,31 +153,3 @@ const allPage = [
     path: 'http://localhost:1024/kylin_h5/saas/audit/detail/todo/6265450c8169f10001d5498d',
   },
 ];
-
-let promiseHandle = Promise.resolve();
-
-// allPage.forEach((item) =>
-//   (promiseHandle = promiseHandle.then((res) =>
-//     getPerformance(
-//       item.name,
-//       item.path,
-//       'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlaWQiOjMzMzMsImF1ZCI6InpiIiwiY2FzIjoidnVpcnNtZmtwbTd1OGdpYTB3cnV3aWFiMXI5Y2hwMW8iLCJleHAiOjE2NTI2ODMyNzB9.PsvfFDsay43bstCem3GQ1NOS7ms3f4TSxqz8neLavGc'
-//     )
-//   )).catch((err) => {
-//     return Promise.reject(err);
-//   })
-// );
-
-for (let i = 0; i < 7; i++) {
-  allPage.forEach((item) =>
-    (promiseHandle = promiseHandle.then((res) =>
-      getPerformance(
-        item.name,
-        item.path,
-        'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJlaWQiOjU2NzQsImF1ZCI6InpiIiwiY2FzIjoidWhhMnZvMHVvNXdmaDA0bWtsbzlob2ozNnRrdDhraWMiLCJleHAiOjE2NTY1Nzg4ODZ9.KSjgamaWB5-B4McSSDtqdx0quBjEgvDJJ9OXGNP8u-k'
-      )
-    )).catch((err) => {
-      return Promise.reject(err);
-    })
-  );
-}

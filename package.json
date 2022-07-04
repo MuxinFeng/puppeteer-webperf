@@ -10,6 +10,7 @@
   "devDependencies": {
     "eslint": "^6.8.0",
     "eslint-config-google": "^0.14.0",
+    "json2xls": "^0.1.2",
     "puppeteer-har": "^1.1.2"
   },
   "scripts": {
@@ -18,6 +19,6 @@
   "dependencies": {
     "lighthouse": "^6.0.0",
     "perfume.js": "^7.0.0",
-    "puppeteer": "^3.0.1"
+    "puppeteer": "^14.1.0"
   }
 }
